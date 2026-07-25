@@ -55,8 +55,21 @@ const robot = {
         return;
     }
     this.startMovement();
-    this.position.y += distance;
-    this.finishMovement();
+    fetch(`http://localhost:8000/robot/move`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            asse: "y",
+            distanza: distance
+        })
+    })
+        .then(response => response.json())
+        .then(data => {
+            this.position = data.new_position;
+            this.finishMovement();
+        });
     },
     
     moveZ(distance) {
@@ -64,8 +77,21 @@ const robot = {
         return;
     }
     this.startMovement();
-    this.position.z += distance;
-    this.finishMovement();
+    fetch(`http://localhost:8000/robot/move`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            asse: "z",
+            distanza: distance
+        })
+    })
+        .then(response => response.json())
+        .then(data => {
+            this.position = data.new_position;
+            this.finishMovement();
+        });
     }
     
 }
