@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>robot-simulator</title>  
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <h1>Robot Simulator</h1>
+    <div class="robot-info" id="robot-info">
+        <h3 id="robot-name">Robot Name: UR5e</h3>
+        <p id="robot-state">State: IDLE</p>
+    </div>
+    <div class="robot-position" id="robot-position">
+        <h3>Robot Position:</h3>
+        <p>Coordinate:</p>
+        <p id="robot-x">X: 0</p>
+        <p id="robot-y">Y: 0</p>
+        <p id="robot-z">Z: 0</p>
+    </div>
+
+    <div class="robot-controls" id="robot-controls">
+        <h3>Controls:</h3>
+        <button id="move-x-pos">Move X +</button>
+        <button id="move-x-neg">Move X -</button>
+        <button id="move-y-pos">Move Y +</button>
+        <button id="move-y-neg">Move Y -</button>
+        <button id="move-z-pos">Move Z +</button>
+        <button id="move-z-neg">Move Z -</button> 
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
