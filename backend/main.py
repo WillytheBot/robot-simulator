@@ -1,7 +1,13 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import create_engine, Column, Integer, String, Float, DateTime
+from sqlalchemy.orm import declarative_base, sessionmaker
+from datetime import datetime
 
+engine = create_engine("sqlite:///robot.db")
+Base = declarative_base()
+SessionLocal = sessionmaker(bind=engine)
 app = FastAPI()
 
 app.add_middleware(
@@ -44,4 +50,27 @@ def move_robot(movimento: MovimentoRobot):
     # Simulate movement completion
     robot_stato["state"] = "IDLE"
 
+    # Save movement history to the database
+    db = SessionLocal()
+    move_history = MoveHistory(asse=asse, distanza=distanza)
+    db.add(move_history)
+    db.commit()
+    db.close()
+
     return {"message": f"Robot moved {distanza} units along {asse}", "new_position": robot_stato["position"]}
+
+class MoveHistory(Base):
+    __tablename__ = "move_history"
+    id = Column(Integer, primary_key=True, index=True)
+    asse = Column(String, index=True)
+    distanza = Column(Float)
+    timestamp = Column(DateTime, default=datetime.utcnow)
+
+Base.metadata.create_all(bind=engine)
+
+@app.get("/robot/history")
+def get_history():
+    db = SessionLocal()
+    eventi = db.query(MoveHistory).all()
+    db.close()
+    return eventi
