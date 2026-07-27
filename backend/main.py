@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, WebSocket
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import create_engine, Column, Integer, String, Float, DateTime
@@ -27,6 +27,8 @@ robot_stato = {
     }
 }
 
+active_connections = []
+
 @app.get("/robot/position")
 def get_robot_position():
     return robot_stato
@@ -37,7 +39,7 @@ class MovimentoRobot(BaseModel):
 
 
 @app.post("/robot/move")
-def move_robot(movimento: MovimentoRobot):
+async def move_robot(movimento: MovimentoRobot):
     asse = movimento.asse
     distanza = movimento.distanza
 
@@ -57,6 +59,9 @@ def move_robot(movimento: MovimentoRobot):
     db.commit()
     db.close()
 
+    for connection in active_connections:
+        await connection.send_json(robot_stato)
+
     return {"message": f"Robot moved {distanza} units along {asse}", "new_position": robot_stato["position"]}
 
 class MoveHistory(Base):
@@ -74,3 +79,14 @@ def get_history():
     eventi = db.query(MoveHistory).all()
     db.close()
     return eventi
+
+
+@app.websocket("/ws")
+async def websocket_endpoint(websocket: WebSocket):
+    await websocket.accept()
+    active_connections.append(websocket)
+    try:
+        while True:
+            await websocket.receive_text()
+    except:
+        active_connections.remove(websocket)

@@ -11,6 +11,8 @@ const moveXNegButton = document.getElementById("move-x-neg");
 const moveYNegButton = document.getElementById("move-y-neg");
 const moveZNegButton = document.getElementById("move-z-neg");
 
+const socket = new WebSocket("ws://localhost:8000/ws");
+
 const robot = {
     name: "UR5e",
     state: "IDLE",
@@ -123,3 +125,19 @@ function updateUI() {
 }
 
 updateUI();
+
+socket.onopen = () => {
+    console.log("Connessione aperta");
+};
+
+socket.onmessage = (event) => {
+    const dati = JSON.parse(event.data);
+    robot.position = dati.position;
+    robot.state = dati.state;
+    console.log(dati);
+    updateUI();
+};
+
+socket.onclose = () => {
+    console.log("Connessione chiusa");
+};
