@@ -9,11 +9,13 @@ This project was built to combine hands-on experience in industrial robotics sup
 ## Features
  
 - Real-time display of robot state (IDLE/MOVING) and position (X, Y, Z)
-- Movement control on each axis
+- Rotation control (RX, RY, RZ), following the same pattern as position
+- Movement control on each axis, both **relative** (incremental +/- steps) and **absolute** (direct target value input)
 - Visual state indicator (color) and movement progress bar, synchronized with the backend
 - Movement history persisted to a database, updated automatically in real time for all connected clients
 - WebSocket connection status indicator
 - Real-time bidirectional communication via WebSocket, alongside a standard REST API
+- Dark-themed, card-based dashboard UI
 ## Tech stack
  
 **Backend**
@@ -63,10 +65,10 @@ Actively in development. Roadmap:
 - [x] Movement history persistence (SQLite + SQLAlchemy)
 - [x] Real-time updates via WebSocket
 - [x] Dockerized backend
-- [x] Polished UI (card-based dashboard, status indicators, real-time history)
-- [ ] Dark theme
-- [ ] Direct target value input for movement (in addition to incremental controls)
-- [ ] Rotation support, in addition to linear X/Y/Z movement
+- [x] Polished, dark-themed UI (card-based dashboard, status indicators, real-time history)
+- [x] Direct target value input for movement (in addition to incremental controls)
+- [x] Rotation support (RX, RY, RZ), in addition to linear X/Y/Z movement
+- [ ] Additional robot states (ERROR/OFFLINE) with simulated events
 - [ ] Online deployment (publicly reachable backend + frontend)
 ## Notes
  
