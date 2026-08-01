@@ -18,6 +18,24 @@ const gotoYButton = document.getElementById("goto-y");
 const inputZ = document.getElementById("input-z");
 const gotoZButton = document.getElementById("goto-z");
 
+const rxElement = document.getElementById("robot-rx");
+const ryElement = document.getElementById("robot-ry");
+const rzElement = document.getElementById("robot-rz");
+
+const moveRXPosButton = document.getElementById("move-rx-pos");
+const moveRYPosButton = document.getElementById("move-ry-pos");
+const moveRZPosButton = document.getElementById("move-rz-pos");
+const moveRXNegButton = document.getElementById("move-rx-neg");
+const moveRYNegButton = document.getElementById("move-ry-neg");
+const moveRZNegButton = document.getElementById("move-rz-neg");
+
+const inputRX = document.getElementById("input-rx");
+const gotoRXButton = document.getElementById("goto-rx");
+const inputRY = document.getElementById("input-ry");
+const gotoRYButton = document.getElementById("goto-ry");
+const inputRZ = document.getElementById("input-rz");
+const gotoRZButton = document.getElementById("goto-rz");
+
 const progressBar = document.getElementById("progress-bar");
 
 const historyList = document.getElementById("history-list");
@@ -29,6 +47,7 @@ const robot = {
     name: "UR5e",
     state: "IDLE",
     position: { x: 0, y: 0, z: 0 },
+    rotation: { rx: 0, ry: 0, rz: 0 },
 
     startMovement() {
         this.state = "MOVING";
@@ -177,6 +196,144 @@ const robot = {
             this.position = data.new_position;
             this.finishMovement();
         });
+    },
+
+    goToRX(valore) {
+    if (this.state === "MOVING") {
+        return;
+    }
+    this.startMovement();
+    fetch(`http://localhost:8000/robot/move`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            asse: "rx",
+            valore: valore,
+            tipo: "assoluto"
+        })
+    })
+        .then(response => response.json())
+        .then(data => {
+            this.rotation = data.new_rotation;
+            this.finishMovement();
+        });
+    },
+
+    goToRY(valore) {
+    if (this.state === "MOVING") {
+        return;
+    }
+    this.startMovement();
+    fetch(`http://localhost:8000/robot/move`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            asse: "ry",
+            valore: valore,
+            tipo: "assoluto"
+        })
+    })
+        .then(response => response.json())
+        .then(data => {
+            this.rotation = data.new_rotation;
+            this.finishMovement();
+        });
+    },
+
+    goToRZ(valore) {
+    if (this.state === "MOVING") {
+        return;
+    }
+    this.startMovement();
+    fetch(`http://localhost:8000/robot/move`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            asse: "rz",
+            valore: valore,
+            tipo: "assoluto"
+        })
+    })
+        .then(response => response.json())
+        .then(data => {
+            this.rotation = data.new_rotation;
+            this.finishMovement();
+        });
+    },
+
+    moveRX(distance) {
+    if (this.state === "MOVING") {
+        return;
+    }
+    this.startMovement();
+    fetch(`http://localhost:8000/robot/move`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            asse: "rx",
+            valore: distance,
+            tipo: "relativo"
+        })
+    })
+        .then(response => response.json())
+        .then(data => {
+            this.rotation = data.new_rotation;
+            this.finishMovement();
+        });
+    },
+
+    moveRY(distance) {
+    if (this.state === "MOVING") {
+        return;
+    }
+    this.startMovement();
+    fetch(`http://localhost:8000/robot/move`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            asse: "ry",
+            valore: distance,
+            tipo: "relativo"
+        })
+    })
+        .then(response => response.json())
+        .then(data => {
+            this.rotation = data.new_rotation;
+            this.finishMovement();
+        });
+    },
+    
+    moveRZ(distance) {
+    if (this.state === "MOVING") {
+        return;
+    }
+    this.startMovement();
+    fetch(`http://localhost:8000/robot/move`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            asse: "rz",
+            valore: distance,
+            tipo: "relativo"
+        })
+    })
+        .then(response => response.json())
+        .then(data => {
+            this.rotation = data.new_rotation;
+            this.finishMovement();
+        });
     }
     
 }
@@ -213,15 +370,50 @@ gotoZButton.addEventListener("click", () => {
     robot.goToZ(valore);
 });
 
+moveRXPosButton.addEventListener("click", () => {
+    robot.moveRX(1);
+});
+moveRYPosButton.addEventListener("click", () => {
+    robot.moveRY(1);
+});
+moveRZPosButton.addEventListener("click", () => {
+    robot.moveRZ(1);
+});
+moveRXNegButton.addEventListener("click", () => {
+    robot.moveRX(-1);
+});
+moveRYNegButton.addEventListener("click", () => {
+    robot.moveRY(-1);
+});
+moveRZNegButton.addEventListener("click", () => {
+    robot.moveRZ(-1);
+});
+
+gotoRXButton.addEventListener("click", () => {
+    const valore = parseFloat(inputRX.value);
+    robot.goToRX(valore);
+});
+gotoRYButton.addEventListener("click", () => {
+    const valore = parseFloat(inputRY.value);
+    robot.goToRY(valore);
+});
+gotoRZButton.addEventListener("click", () => {
+    const valore = parseFloat(inputRZ.value);
+    robot.goToRZ(valore);
+});
+
 function updateUI() {
-    stateElement.textContent = `State: ${robot.state}`;
+    stateElement.textContent = `${robot.state}`;
     xElement.textContent = `X: ${robot.position.x}`;
     yElement.textContent = `Y: ${robot.position.y}`;
     zElement.textContent = `Z: ${robot.position.z}`;
+    rxElement.textContent = `RX: ${robot.rotation.rx}`;
+    ryElement.textContent = `RY: ${robot.rotation.ry}`;
+    rzElement.textContent = `RZ: ${robot.rotation.rz}`;
     if (robot.state === "IDLE") {
-    stateIndicator.style.backgroundColor = "green";
+        stateIndicator.style.backgroundColor = "green";
     } else if (robot.state === "MOVING") {
-    stateIndicator.style.backgroundColor = "orange";
+        stateIndicator.style.backgroundColor = "orange";
     }
 }
 
@@ -236,6 +428,7 @@ socket.onopen = () => {
 socket.onmessage = (event) => {
     const dati = JSON.parse(event.data);
     robot.position = dati.position;
+    robot.rotation = dati.rotation;
     robot.state = dati.state;
     if (dati.state === "IDLE") {
         progressBar.classList.add("no-transition");

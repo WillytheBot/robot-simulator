@@ -26,6 +26,11 @@ robot_stato = {
         "x": 0,
         "y": 0,
         "z": 0
+    },
+    "rotation": {
+        "rx": 0,
+        "ry": 0,
+        "rz": 0
     }
 }
 
@@ -46,14 +51,17 @@ async def move_robot(movimento: MovimentoRobot):
     asse = movimento.asse
     valore = movimento.valore
 
-    if asse not in robot_stato["position"]:
+    if asse in robot_stato["position"]:
+        gruppo = robot_stato["position"]
+    elif asse in robot_stato["rotation"]:
+        gruppo = robot_stato["rotation"]
+    else:
         return {"error": "Asse non valido"}
 
     if movimento.tipo == "assoluto":
-        robot_stato["position"][asse] = valore
-
+        gruppo[asse] = valore
     else:
-        robot_stato["position"][asse] += valore
+        gruppo[asse] += valore
         
     robot_stato["state"] = "MOVING"
     
@@ -77,7 +85,7 @@ async def move_robot(movimento: MovimentoRobot):
     for connection in active_connections:
         await connection.send_json(messaggio)
 
-    return {"message": f"Robot moved {valore} units along {asse}", "new_position": robot_stato["position"]}
+    return {"message": f"Robot moved {valore} units along {asse}", "new_position": robot_stato["position"], "new_rotation": robot_stato["rotation"]}
 
 class MoveHistory(Base):
     __tablename__ = "move_history"
