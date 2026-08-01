@@ -1,6 +1,21 @@
 body {
     font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background-color: #f4f4f5;
+    margin: 0;
+    padding: 24px;
+}
 
+h1 {
+    margin-bottom: 20px;
+    color: #1a1a1a;
+}
+
+h3 {
+    margin-top: 0;
+    color: #444;
+    font-size: 16px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 #state-indicator {
@@ -29,4 +44,12 @@ body {
 
 .progress-bar.no-transition {
     transition: none;
+}
+
+.card {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 16px;
 }
