@@ -10,7 +10,10 @@
     <h1>Robot Simulator</h1>
     <div class="robot-info" id="robot-info">
         <h3 id="robot-name">Robot Name: UR5e</h3>
-        <p id="robot-state">State: IDLE</p>
+        <div class="progress-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+        <p>State: <span id="state-indicator"></span> <span id="robot-state-text">IDLE</span></p>
     </div>
     <div class="robot-position" id="robot-position">
         <h3>Robot Position:</h3>

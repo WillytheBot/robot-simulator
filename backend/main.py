@@ -1,3 +1,5 @@
+import asyncio
+
 from fastapi import FastAPI, WebSocket
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
@@ -48,6 +50,11 @@ async def move_robot(movimento: MovimentoRobot):
 
     robot_stato["position"][asse] += distanza
     robot_stato["state"] = "MOVING"
+
+    for connection in active_connections:
+        await connection.send_json(robot_stato)
+
+    await asyncio.sleep(1.5)  # Simulate movement time
 
     # Simulate movement completion
     robot_stato["state"] = "IDLE"

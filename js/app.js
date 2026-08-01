@@ -1,4 +1,5 @@
-const stateElement = document.getElementById("robot-state");
+const stateElement = document.getElementById("robot-state-text");
+const stateIndicator = document.getElementById("state-indicator");
 
 const xElement = document.getElementById("robot-x");
 const yElement = document.getElementById("robot-y");
@@ -11,6 +12,8 @@ const moveXNegButton = document.getElementById("move-x-neg");
 const moveYNegButton = document.getElementById("move-y-neg");
 const moveZNegButton = document.getElementById("move-z-neg");
 
+const progressBar = document.getElementById("progress-bar");
+
 const socket = new WebSocket("ws://localhost:8000/ws");
 
 const robot = {
@@ -20,14 +23,12 @@ const robot = {
 
     startMovement() {
         this.state = "MOVING";
+        progressBar.style.width = "100%";
         updateUI();
     },
 
     finishMovement() {
-        setTimeout(() => {
-            this.state = "IDLE";
-            updateUI();
-        }, 500);
+        updateUI();
     },
 
     moveX(distance) {
@@ -122,6 +123,11 @@ function updateUI() {
     xElement.textContent = `X: ${robot.position.x}`;
     yElement.textContent = `Y: ${robot.position.y}`;
     zElement.textContent = `Z: ${robot.position.z}`;
+    if (robot.state === "IDLE") {
+    stateIndicator.style.backgroundColor = "green";
+    } else if (robot.state === "MOVING") {
+    stateIndicator.style.backgroundColor = "orange";
+    }
 }
 
 updateUI();
@@ -134,7 +140,12 @@ socket.onmessage = (event) => {
     const dati = JSON.parse(event.data);
     robot.position = dati.position;
     robot.state = dati.state;
-    console.log(dati);
+    if (dati.state === "IDLE") {
+        progressBar.classList.add("no-transition");
+        progressBar.style.width = "0%";
+        progressBar.offsetHeight; // Trigger reflow
+        progressBar.classList.remove("no-transition");
+    }
     updateUI();
 };
 
