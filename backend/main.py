@@ -66,8 +66,10 @@ async def move_robot(movimento: MovimentoRobot):
     db.commit()
     db.close()
 
+    messaggio = {**robot_stato, "asse": asse, "distanza": distanza}
+
     for connection in active_connections:
-        await connection.send_json(robot_stato)
+        await connection.send_json(messaggio)
 
     return {"message": f"Robot moved {distanza} units along {asse}", "new_position": robot_stato["position"]}
 

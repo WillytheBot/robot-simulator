@@ -17,6 +17,7 @@ const progressBar = document.getElementById("progress-bar");
 const historyList = document.getElementById("history-list");
 
 const socket = new WebSocket("ws://localhost:8000/ws");
+const connectionStatus = document.getElementById("connection-status");
 
 const robot = {
     name: "UR5e",
@@ -135,6 +136,8 @@ function updateUI() {
 updateUI();
 
 socket.onopen = () => {
+    connectionStatus.textContent = "● Connesso";
+    connectionStatus.style.color = "green";
     console.log("Connessione aperta");
 };
 
@@ -147,24 +150,33 @@ socket.onmessage = (event) => {
         progressBar.style.width = "0%";
         progressBar.offsetHeight; // Trigger reflow
         progressBar.classList.remove("no-transition");
+
+        aggiungiEventoStorico({
+        asse: dati.asse,
+        distanza: dati.distanza,
+        timestamp: new Date().toISOString()
+        });
     }
     updateUI();
 };
 
 socket.onclose = () => {
+    connectionStatus.textContent = "● Disconnesso";
+    connectionStatus.style.color = "red";
     console.log("Connessione chiusa");
 };
 
 async function caricaStorico() {
     const risposta = await fetch("http://localhost:8000/robot/history");
     const dati = await risposta.json();
-    
-    dati.forEach(evento => {
+    dati.forEach(evento => aggiungiEventoStorico(evento));
+}
+
+function aggiungiEventoStorico(evento) {
     const nuovoElemento = document.createElement("li");
     const orario = new Date(evento.timestamp).toLocaleString();
     nuovoElemento.textContent = `[${orario}] ${evento.asse.toUpperCase()} moved by ${evento.distanza}`;
     historyList.appendChild(nuovoElemento);
-    });
 }
 
 caricaStorico();
