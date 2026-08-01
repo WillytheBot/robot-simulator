@@ -37,20 +37,26 @@ def get_robot_position():
 
 class MovimentoRobot(BaseModel):
     asse: str
-    distanza: float
+    valore: float
+    tipo: str
 
 
 @app.post("/robot/move")
 async def move_robot(movimento: MovimentoRobot):
     asse = movimento.asse
-    distanza = movimento.distanza
+    valore = movimento.valore
 
     if asse not in robot_stato["position"]:
         return {"error": "Asse non valido"}
 
-    robot_stato["position"][asse] += distanza
-    robot_stato["state"] = "MOVING"
+    if movimento.tipo == "assoluto":
+        robot_stato["position"][asse] = valore
 
+    else:
+        robot_stato["position"][asse] += valore
+        
+    robot_stato["state"] = "MOVING"
+    
     for connection in active_connections:
         await connection.send_json(robot_stato)
 
@@ -61,17 +67,17 @@ async def move_robot(movimento: MovimentoRobot):
 
     # Save movement history to the database
     db = SessionLocal()
-    move_history = MoveHistory(asse=asse, distanza=distanza)
+    move_history = MoveHistory(asse=asse, distanza=valore)
     db.add(move_history)
     db.commit()
     db.close()
 
-    messaggio = {**robot_stato, "asse": asse, "distanza": distanza}
+    messaggio = {**robot_stato, "asse": asse, "distanza": valore}
 
     for connection in active_connections:
         await connection.send_json(messaggio)
 
-    return {"message": f"Robot moved {distanza} units along {asse}", "new_position": robot_stato["position"]}
+    return {"message": f"Robot moved {valore} units along {asse}", "new_position": robot_stato["position"]}
 
 class MoveHistory(Base):
     __tablename__ = "move_history"

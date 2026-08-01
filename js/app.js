@@ -11,6 +11,12 @@ const moveZPosButton = document.getElementById("move-z-pos");
 const moveXNegButton = document.getElementById("move-x-neg");
 const moveYNegButton = document.getElementById("move-y-neg");
 const moveZNegButton = document.getElementById("move-z-neg");
+const inputX = document.getElementById("input-x");
+const gotoXButton = document.getElementById("goto-x");
+const inputY = document.getElementById("input-y");
+const gotoYButton = document.getElementById("goto-y");
+const inputZ = document.getElementById("input-z");
+const gotoZButton = document.getElementById("goto-z");
 
 const progressBar = document.getElementById("progress-bar");
 
@@ -34,6 +40,76 @@ const robot = {
         updateUI();
     },
 
+
+    goToX(valore) {
+    if (this.state === "MOVING") {
+        return;
+    }
+    this.startMovement();
+    fetch(`http://localhost:8000/robot/move`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            asse: "x",
+            valore: valore,
+            tipo: "assoluto"
+        })
+    })
+        .then(response => response.json())
+        .then(data => {
+            this.position = data.new_position;
+            this.finishMovement();
+        });
+    },
+
+    goToY(valore) {
+    if (this.state === "MOVING") {
+        return;
+    }
+    this.startMovement();
+    fetch(`http://localhost:8000/robot/move`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            asse: "y",
+            valore: valore,
+            tipo: "assoluto"
+        })
+    })
+        .then(response => response.json())
+        .then(data => {
+            this.position = data.new_position;
+            this.finishMovement();
+        });
+    },
+
+    goToZ(valore) {
+    if (this.state === "MOVING") {
+        return;
+    }
+    this.startMovement();
+    fetch(`http://localhost:8000/robot/move`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            asse: "z",
+            valore: valore,
+            tipo: "assoluto"
+        })
+    })
+        .then(response => response.json())
+        .then(data => {
+            this.position = data.new_position;
+            this.finishMovement();
+        });
+    },
+
     moveX(distance) {
     if (this.state === "MOVING") {
         return;
@@ -46,7 +122,8 @@ const robot = {
         },
         body: JSON.stringify({
             asse: "x",
-            distanza: distance
+            valore: distance,
+            tipo: "relativo"
         })
     })
         .then(response => response.json())
@@ -68,7 +145,8 @@ const robot = {
         },
         body: JSON.stringify({
             asse: "y",
-            distanza: distance
+            valore: distance,
+            tipo: "relativo"
         })
     })
         .then(response => response.json())
@@ -90,7 +168,8 @@ const robot = {
         },
         body: JSON.stringify({
             asse: "z",
-            distanza: distance
+            valore: distance,
+            tipo: "relativo"
         })
     })
         .then(response => response.json())
@@ -119,6 +198,19 @@ moveYNegButton.addEventListener("click", () => {
 });
 moveZNegButton.addEventListener("click", () => {
     robot.moveZ(-1);
+});
+
+gotoXButton.addEventListener("click", () => {
+    const valore = parseFloat(inputX.value);
+    robot.goToX(valore);
+});
+gotoYButton.addEventListener("click", () => {
+    const valore = parseFloat(inputY.value);
+    robot.goToY(valore);
+});
+gotoZButton.addEventListener("click", () => {
+    const valore = parseFloat(inputZ.value);
+    robot.goToZ(valore);
 });
 
 function updateUI() {
