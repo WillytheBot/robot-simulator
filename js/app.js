@@ -14,6 +14,8 @@ const moveZNegButton = document.getElementById("move-z-neg");
 
 const progressBar = document.getElementById("progress-bar");
 
+const historyList = document.getElementById("history-list");
+
 const socket = new WebSocket("ws://localhost:8000/ws");
 
 const robot = {
@@ -152,3 +154,17 @@ socket.onmessage = (event) => {
 socket.onclose = () => {
     console.log("Connessione chiusa");
 };
+
+async function caricaStorico() {
+    const risposta = await fetch("http://localhost:8000/robot/history");
+    const dati = await risposta.json();
+    
+    dati.forEach(evento => {
+    const nuovoElemento = document.createElement("li");
+    const orario = new Date(evento.timestamp).toLocaleString();
+    nuovoElemento.textContent = `[${orario}] ${evento.asse.toUpperCase()} moved by ${evento.distanza}`;
+    historyList.appendChild(nuovoElemento);
+    });
+}
+
+caricaStorico();
